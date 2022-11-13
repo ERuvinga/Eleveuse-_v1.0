@@ -1,28 +1,26 @@
-#include<LiquidCrystal.h>
 #include <dht.h>
 #include "prototypes.h"
-#include "lcd.h"
 
   // Composants connectes sur l'arduino
 #define DHT_PIN 12
+
 // leds pour le control de la temperature
 #define RED_LED_T 13
 #define GREEN_LED_T 11
-#define YELLOW 10
 
 
 //AUTRES
 #define BUZZER 7
-#define RELAIS_RES 6
+#define RELAIS_RES_A 5
+#define RELAIS_RES_B 6
 
-unsigned long temp_lcd;
-unsigned long temp_buzzer;
+
 unsigned long temp_led_red;
-unsigned long temp_led_yel;
+unsigned long temp_getTemp;
+unsigned long temp_led_green;
 
-bool etat_buz= 0;
 bool etat_red_led= 0;
-bool etat_yellow_led= 0;
+bool etat_led_green= 0;
 
 dht capteur;
 
@@ -30,39 +28,36 @@ void beginer(){
   Serial.begin(9600);  
   pinMode(RED_LED_T , OUTPUT);
   pinMode(GREEN_LED_T, OUTPUT);
-  pinMode(YELLOW, OUTPUT);
   pinMode(BUZZER, OUTPUT);
-  pinMode(RELAIS_RES , OUTPUT);
+  pinMode(RELAIS_RES_A , OUTPUT);
+  pinMode(RELAIS_RES_B , OUTPUT);
 
-  lcd_tempe.begin(16, 2); 
 }
 
 void setup() {
   
     beginer();
-    temp_lcd = millis();
-    temp_buzzer = millis();
+    temp_getTemp = millis();
     temp_led_red = millis();
-    temp_led_yel = millis();
+    temp_led_green = millis();
  }
 
 void loop() {
  
-  if(( millis() - temp_lcd) >= 500){
-    temp_lcd = millis(); 
-          affiche_tempe();
+  if(( millis() - temp_getTemp) >= 800){
+    temp_getTemp = millis(); 
+          Serial.println(tempe);
+          capteur.read11(DHT_PIN); //lecture sur le capteur dht11
           }
 
-  capteur.read11(DHT_PIN); //lecture sur le capteur dht11
   control_temperature();
-  control_buzzer();
   tempe = capteur.temperature;
 }
 
 
 
 void control_temperature(){
-    
+/*    
   if(tempe >= 40){
    digitalWrite(RELAIS_RES, LOW);
   }
@@ -72,18 +67,18 @@ void control_temperature(){
   }
    
    control_leds();
-
+*/
 }
 
 
 
 void control_leds(){ 
-
-  if(tempe < 36.5){
+/*
+  if(tempe < 36){
       if(( millis() - temp_led_yel) >= 500){
         temp_led_yel = millis();     
-        digitalWrite(YELLOW, etat_yellow_led);
-        etat_yellow_led= !etat_yellow_led;
+        digitalWrite(RED_LED_T, etat_led_green);
+        etat_yellow_led= !etat_led_green;
       }
     digitalWrite(GREEN_LED_T, LOW);
     digitalWrite(RED_LED_T, LOW);
@@ -104,20 +99,5 @@ void control_leds(){
 
        digitalWrite(GREEN_LED_T, LOW);
        digitalWrite(YELLOW, LOW);
-    }
-}
-
-
-void control_buzzer(){
- 
-  if((tempe > 40) || (tempe < 30)){
-      if(( millis() - temp_buzzer) >= 500){
-        temp_buzzer = millis();     
-        digitalWrite(BUZZER, etat_buz);
-        etat_buz= !etat_buz;
-      }
-  }
-
-  else 
-    digitalWrite(BUZZER, LOW);
+    }*/
 }
