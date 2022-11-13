@@ -57,17 +57,18 @@ void loop() {
 
 
 void control_temperature(){
-/*    
+    
   if(tempe >= 40){
-   digitalWrite(RELAIS_RES, LOW);
+   digitalWrite(RELAIS_RES_A, LOW);
+   digitalWrite(RELAIS_RES_B, LOW);
   }
 
- else if(tempe < 36){
-   digitalWrite(RELAIS_RES, HIGH);
+ else if(tempe <= 36){
+   digitalWrite(RELAIS_RES_A, HIGH);
+   digitalWrite(RELAIS_RES_B, HIGH);
   }
    
    control_leds();
-*/
 }
 
 
