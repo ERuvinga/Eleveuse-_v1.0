@@ -2,7 +2,7 @@
 #define proto
 
 //variable pour la temperature
-float tempe;
+int tempe;
 
  //FONCTIONS POUR LE CONTROL DE tempe,humid,leds, etc...
 void control_temperature();

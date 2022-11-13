@@ -1,4 +1,5 @@
 #include <dht.h>
+#include <avr/wdt.h> // librairie watchdog
 #include "prototypes.h"
 
   // Composants connectes sur l'arduino
@@ -23,13 +24,14 @@ bool etat_red_led= 0;
 dht capteur;
 
 void beginer(){
-  //Serial.begin(9600);  
+  Serial.begin(9600);  
   pinMode(RED_LED_T , OUTPUT);
   pinMode(GREEN_LED_T, OUTPUT);
   pinMode(BUZZER, OUTPUT);
   pinMode(RELAIS_RES_A , OUTPUT);
   pinMode(RELAIS_RES_B , OUTPUT);
 
+  wdt_enable(WDTO_4S);// definition du delais de chien de garde a 4 secondes
 }
 
 void setup() {
@@ -37,18 +39,21 @@ void setup() {
     beginer();
     temp_getTemp = millis();
     temp_led_red = millis();
+
+    wdt_reset();//on remet a zero le compteur du watchdog avant la boucle principale
  }
 
 void loop() {
  
   if(( millis() - temp_getTemp) >= 800){
     temp_getTemp = millis(); 
-          //Serial.println(tempe);
+          Serial.println(tempe);
           capteur.read11(DHT_PIN); //lecture sur le capteur dht11
           }
 
   control_temperature();
   tempe = capteur.temperature;
+  wdt_reset(); // si tout fonctionne bien on remet a zero le compteur du watchdog
 }
 
 
@@ -71,7 +76,7 @@ void control_temperature(){
 
 
 void control_leds(){ 
-  if((tempe < 36) || (tempe >= 45)){
+  if((tempe < 36) || (tempe >= 41)){
       if(( millis() - temp_led_red) >= 1000){
         temp_led_red = millis();     
         digitalWrite(RED_LED_T, etat_red_led);
@@ -80,7 +85,7 @@ void control_leds(){
     digitalWrite(GREEN_LED_T, LOW);    
   }
 
-  else if((tempe > 36) && (tempe < 40)){
+  else if((tempe >= 36) && (tempe < 40)){
     digitalWrite(RED_LED_T, LOW);
     digitalWrite(GREEN_LED_T, HIGH);
   }
